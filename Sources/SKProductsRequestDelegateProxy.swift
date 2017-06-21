@@ -21,7 +21,7 @@ public class SKProductsRequestDelegateProxy: DelegateProxy, SKProductsRequestDel
         request.delegate = delegate as? SKProductsRequestDelegate
     }
     
-    public override class func createProxyForObject(_ object: AnyObject) -> AnyObject {
+    public override static func createProxyForObject(_ object: AnyObject) -> AnyObject {
         let request: SKProductsRequest = object as! SKProductsRequest
         return request.createRxDelegateProxy()
     }

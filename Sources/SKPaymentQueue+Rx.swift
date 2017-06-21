@@ -32,7 +32,7 @@ extension Reactive where Base: SKPaymentQueue {
                     self.base.finishTransaction(transaction)
                 }
                 throw SKError(_nsError: error as NSError)
-        }
+            }
         
         let observable = Observable<SKPaymentQueue>.create { observer in
             
