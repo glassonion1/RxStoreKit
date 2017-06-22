@@ -4,7 +4,7 @@
 [![License](https://img.shields.io/cocoapods/l/RxStoreKit.svg?style=flat)](http://cocoapods.org/pods/RxStoreKit)
 [![Platform](https://img.shields.io/cocoapods/p/RxStoreKit.svg?style=flat)](http://cocoapods.org/pods/RxStoreKit)
 
-RxStoreKit is lightweight and easy to use Rx support for StoreKit.
+RxStoreKit is lightweight and easy to use Rx support for StoreKit(In-App Purchases).
 
 ## Usage
 
@@ -30,6 +30,10 @@ productRequest.start()
 ```swift
 SKPaymentQueue.default().rx.restoreCompletedTransactions()
     .subscribe(onNext: { queue in
+        // paymentQueueRestoreCompletedTransactionsFinished
+        print(queue)
+    }, onError: { error in
+        // restoreCompletedTransactionsFailedWithError
         print(queue)
     }).disposed(by: disposeBag)
 ```
