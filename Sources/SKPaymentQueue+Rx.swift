@@ -54,15 +54,16 @@ extension Reactive where Base: SKPaymentQueue {
         
         let observable = Observable<SKPaymentTransaction>.create { observer in
             
-            let disposable = self.transactionObserver.rx_updatedTransaction.subscribe(onNext: { transaction in
+            let update = self.transactionObserver.rx_updatedTransaction.do(onNext: { transaction in
                 switch transaction.transactionState {
                 case .purchasing:
                     print("in progress")
                 case .purchased:
                     observer.onNext(transaction)
-                    self.base.finishTransaction(transaction)
-                    //if transaction.downloads.count == 0 {
-                //}
+                    //self.base.finishTransaction(transaction)
+                    if transaction.downloads.count == 0 {
+                        self.base.finishTransaction(transaction)
+                    }
                 case .restored:
                     print("restored")
                 case .failed:
@@ -71,11 +72,18 @@ extension Reactive where Base: SKPaymentQueue {
                         self.base.finishTransaction(transaction)
                     }
                 case .deferred:
-                    observer.onCompleted()
                     self.base.finishTransaction(transaction)
                 }
-                
             })
+            let remove = self.transactionObserver.rx_removedTransaction
+            
+            let disposable = Observable.of(update, remove)
+                .merge()
+                .subscribe(onNext: { transaction in
+                    if self.base.transactions.count == 0 {
+                        observer.onCompleted()
+                    }
+                })
             
             self.base.add(payment)
             
@@ -107,6 +115,9 @@ extension Reactive where Base: SKPaymentQueue {
                     observer.onCompleted()
                 case .paused:
                     print("paused")
+                }
+                if download.transaction.downloads.count == 0 {
+                    self.base.finishTransaction(download.transaction)
                 }
             })
             
