@@ -7,8 +7,10 @@
 //
 
 import StoreKit
-import RxSwift
-import RxCocoa
+#if !RX_NO_MODULE
+    import RxSwift
+    import RxCocoa
+#endif
 
 public enum ReceiptError: Error {
     case invalid(code: Int)

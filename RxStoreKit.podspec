@@ -17,7 +17,7 @@ Pod::Spec.new do |s|
   #
 
   s.name         = "RxStoreKit"
-  s.version      = "1.0.1"
+  s.version      = "1.1.0.beta.0"
   s.summary      = "StoreKit library for RxSwift"
 
   # This description is used to generate tags and improve search results.
@@ -136,6 +136,6 @@ Pod::Spec.new do |s|
 
   # s.xcconfig = { "HEADER_SEARCH_PATHS" => "$(SDKROOT)/usr/include/libxml2" }
   # s.dependency "JSONKit", "~> 1.4"
-  s.dependency 'RxSwift', '~> 3.2'
-  s.dependency 'RxCocoa', '~> 3.2'
+  s.dependency 'RxSwift', '~> 4.0.0-beta.0'
+  s.dependency 'RxCocoa', '~> 4.0.0-beta.0'
 end
