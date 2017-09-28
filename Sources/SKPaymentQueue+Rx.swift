@@ -79,17 +79,9 @@ extension Reactive where Base: SKPaymentQueue {
     public func restoreCompletedTransactions() -> Observable<SKPaymentQueue> {
         
         let success = transactionObserver.rx_paymentQueueRestoreCompletedTransactionsFinished
-            .do(onNext: { queue in
-                for transaction in queue.transactions {
-                    self.base.finishTransaction(transaction)
-                }
-            })
-        
+
         let error = transactionObserver.rx_restoreCompletedTransactionsFailedWithError
             .map { (queue, error) -> SKPaymentQueue in
-                for transaction in queue.transactions {
-                    self.base.finishTransaction(transaction)
-                }
                 throw SKError(_nsError: error as NSError)
             }
         
@@ -131,9 +123,6 @@ extension Reactive where Base: SKPaymentQueue {
                             }
                             if contains {
                                 observer.onNext(transaction)
-                                if transaction.downloads.count == 0 {
-                                    self.base.finishTransaction(transaction)
-                                }
                             } else {
                                 observer.onError(ReceiptError.illegal)
                             }
@@ -149,10 +138,9 @@ extension Reactive where Base: SKPaymentQueue {
                 case .failed:
                     if let transactionError = transaction.error {
                         observer.onError(transactionError)
-                        self.base.finishTransaction(transaction)
                     }
                 case .deferred:
-                    self.base.finishTransaction(transaction)
+                    print("deferred")
                 }
             })
             let remove = self.transactionObserver.rx_removedTransaction
@@ -195,9 +183,6 @@ extension Reactive where Base: SKPaymentQueue {
                     observer.onCompleted()
                 case .paused:
                     print("paused")
-                }
-                if download.transaction.downloads.count == 0 {
-                    self.base.finishTransaction(download.transaction)
                 }
             })
             
