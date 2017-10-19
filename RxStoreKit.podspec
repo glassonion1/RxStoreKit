@@ -17,7 +17,7 @@ Pod::Spec.new do |s|
   #
 
   s.name         = "RxStoreKit"
-  s.version      = "1.1.0"
+  s.version      = "1.1.1"
   s.summary      = "StoreKit library for RxSwift"
 
   # This description is used to generate tags and improve search results.
