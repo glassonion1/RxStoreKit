@@ -33,11 +33,6 @@ public class SKProductsRequestDelegateProxy
         object.delegate = delegate
     }
     
-    public static func currentDelegateFor(_ object: AnyObject) -> AnyObject? {
-        let request: SKProductsRequest = object as! SKProductsRequest
-        return request.delegate
-    }
-    
     public static func setCurrentDelegate(_ delegate: AnyObject?, toObject object: AnyObject) {
         let request: SKProductsRequest = object as! SKProductsRequest
         request.delegate = delegate as? SKProductsRequestDelegate
