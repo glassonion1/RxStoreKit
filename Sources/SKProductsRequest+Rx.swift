@@ -7,8 +7,10 @@
 //
 
 import StoreKit
-import RxSwift
-import RxCocoa
+#if !RX_NO_MODULE
+    import RxSwift
+    import RxCocoa
+#endif
 
 extension SKProductsRequest {
     
@@ -20,13 +22,12 @@ extension SKProductsRequest {
 
 extension Reactive where Base: SKProductsRequest {
     
-    public var delegate: DelegateProxy {
-        return SKProductsRequestDelegateProxy.proxyForObject(base)
+    public var delegate: DelegateProxy<SKProductsRequest, SKProductsRequestDelegate> {
+        return SKProductsRequestDelegateProxy.proxy(for: base)
     }
     
     public var productsRequest: Observable<SKProductsResponse> {
-        let proxy = SKProductsRequestDelegateProxy.proxyForObject(base)
-        return proxy.responseSubject
+        return SKProductsRequestDelegateProxy.proxy(for: base).responseSubject.asObservable()
     }
     
 }

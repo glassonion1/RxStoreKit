@@ -7,10 +7,32 @@
 //
 
 import StoreKit
-import RxSwift
-import RxCocoa
+#if !RX_NO_MODULE
+    import RxSwift
+    import RxCocoa
+#endif
 
-public class SKProductsRequestDelegateProxy: DelegateProxy, SKProductsRequestDelegate, DelegateProxyType {
+public class SKProductsRequestDelegateProxy
+    : DelegateProxy<SKProductsRequest, SKProductsRequestDelegate>
+    , DelegateProxyType
+    , SKProductsRequestDelegate {
+    
+    public init(parentObject: SKProductsRequest) {
+        super.init(parentObject: parentObject, delegateProxy: SKProductsRequestDelegateProxy.self)
+    }
+    
+    public static func registerKnownImplementations() {
+        self.register { SKProductsRequestDelegateProxy(parentObject: $0) }
+    }
+    
+    public static func currentDelegate(for object: SKProductsRequest) -> SKProductsRequestDelegate? {
+        return object.delegate
+    }
+    
+    public static func setCurrentDelegate(_ delegate: SKProductsRequestDelegate?, to object: SKProductsRequest) {
+        object.delegate = delegate
+    }
+    
     public static func currentDelegateFor(_ object: AnyObject) -> AnyObject? {
         let request: SKProductsRequest = object as! SKProductsRequest
         return request.delegate
@@ -21,19 +43,14 @@ public class SKProductsRequestDelegateProxy: DelegateProxy, SKProductsRequestDel
         request.delegate = delegate as? SKProductsRequestDelegate
     }
     
-    public override static func createProxyForObject(_ object: AnyObject) -> AnyObject {
-        let request: SKProductsRequest = object as! SKProductsRequest
-        return request.createRxDelegateProxy()
-    }
-    
     let responseSubject = PublishSubject<SKProductsResponse>()
     
     public func productsRequest(_ request: SKProductsRequest, didReceive response: SKProductsResponse) {
-        responseSubject.onNext(response)
         _forwardToDelegate?.productsRequest(request, didReceive: response)
+        responseSubject.onNext(response)
     }
     
     deinit {
-        responseSubject.onCompleted()
+        responseSubject.on(.completed)
     }
 }
