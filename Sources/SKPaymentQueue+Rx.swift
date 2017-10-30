@@ -152,19 +152,21 @@ extension Reactive where Base: SKPaymentQueue {
                 })
             let remove = self.transactionObserver.rx_removedTransaction
             
-            let disposable = Observable.of(update, remove)
+            let sharedTransactionResult = Observable.of(update, remove)
                 .merge()
+                .share()
+            let disposable1 = sharedTransactionResult
                 .subscribe(onNext: { transaction in
                     if self.base.transactions.count == 0 {
                         observer.onCompleted()
                     }
                 })
+            let disposable2 = sharedTransactionResult
+                .bind(to: observer)
             
             self.base.add(payment)
             
-            return Disposables.create {
-                disposable.dispose()
-            }
+            return Disposables.create(disposable1, disposable2)
         }
         
         return observable
