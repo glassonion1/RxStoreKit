@@ -46,7 +46,7 @@ extension ReceiptError: CustomStringConvertible {
 }
 
 extension SKPaymentQueue {
-    func verifyReceipt() -> Observable<Any> {
+    func verifyReceipt(transaction: SKPaymentTransaction) -> Observable<SKPaymentTransaction> {
         #if DEBUG
             let verifyReceiptURLString = "https://sandbox.itunes.apple.com/verifyReceipt"
         #else
@@ -65,6 +65,9 @@ extension SKPaymentQueue {
             request.httpBody = json
             let scheduler = ConcurrentDispatchQueueScheduler(qos: .background)
             return URLSession.shared.rx.json(request: request).timeout(30, scheduler: scheduler)
+                .flatMapLatest({ [unowned self] response -> Observable<SKPaymentTransaction> in
+                    self.verificationResult(for: transaction, response: response)
+                })
         } catch let error {
             return Observable.error(error)
         }
@@ -123,7 +126,8 @@ extension Reactive where Base: SKPaymentQueue {
         return observable
     }
     
-    public func add(product: SKProduct, verifyReceipt: Observable<SKPaymentTransaction>? = nil) -> Observable<SKPaymentTransaction> {
+    public func add(product: SKProduct,
+                    shouldVerify: Bool) -> Observable<SKPaymentTransaction> {
         
         let payment = SKPayment(product: product)
         
@@ -133,10 +137,11 @@ extension Reactive where Base: SKPaymentQueue {
                 .flatMapLatest({ transaction -> Observable<SKPaymentTransaction> in
                     switch transaction.transactionState {
                     case .purchased:
-                        return verifyReceipt ?? self.base.verifyReceipt()
-                            .flatMapLatest({
-                                self.base.verificationResult(for: transaction, response: $0)
-                            })
+                        if shouldVerify {
+                            return self.base.verifyReceipt(transaction: transaction)
+                        } else {
+                            return Observable.of(transaction)
+                        }
                     case .failed, .deferred:
                         if let transactionError = transaction.error {
                             return Observable.error(transactionError)
