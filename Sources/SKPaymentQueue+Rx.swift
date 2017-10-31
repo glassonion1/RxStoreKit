@@ -133,9 +133,8 @@ extension Reactive where Base: SKPaymentQueue {
         
         let observable = Observable<SKPaymentTransaction>.create { observer in
             
-            let update = self.transactionObserver.rx_updatedTransaction
+            let disposable = self.transactionObserver.rx_updatedTransaction
                 .flatMapLatest({ transaction -> Observable<SKPaymentTransaction> in
-                    print("transaction state = \(transaction.transactionState)")
                     switch transaction.transactionState {
                     case .purchased:
                         if shouldVerify {
@@ -143,22 +142,9 @@ extension Reactive where Base: SKPaymentQueue {
                         } else {
                             return Observable.of(transaction)
                         }
-                    case .failed:
-                        if let transactionError = transaction.error {
-                            return Observable.error(transactionError)
-                        }
-                    default: print(transaction.transactionState)
+                    default: print("transaction state = \(transaction.transactionState)")
                     }
                     return Observable.of(transaction)
-                })
-            
-            let disposable = update
-                .flatMapLatest({ transaction -> Observable<SKPaymentTransaction> in
-                    if self.base.transactions.count == 0 {
-                        return Observable.empty()
-                    } else {
-                        return Observable.of(transaction)
-                    }
                 })
                 .bind(to: observer)
             
