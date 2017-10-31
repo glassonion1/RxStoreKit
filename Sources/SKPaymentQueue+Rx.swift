@@ -73,7 +73,7 @@ extension SKPaymentQueue {
 
 extension Reactive where Base: SKPaymentQueue {
     
-    var transactionObserver: RxSKPaymentTransactionObserver {
+    public var transactionObserver: RxSKPaymentTransactionObserver {
         return RxSKPaymentTransactionObserver.shared
     }
     

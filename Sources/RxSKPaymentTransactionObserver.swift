@@ -12,7 +12,7 @@ import StoreKit
     import RxCocoa
 #endif
 
-class RxSKPaymentTransactionObserver {
+public class RxSKPaymentTransactionObserver {
     
     static let shared = RxSKPaymentTransactionObserver()
     
@@ -62,7 +62,7 @@ class RxSKPaymentTransactionObserver {
         
     }
     
-    var rx_updatedTransaction: Observable<SKPaymentTransaction> {
+    public var rx_updatedTransaction: Observable<SKPaymentTransaction> {
         return observer.updatedTransactionSubject
     }
     
