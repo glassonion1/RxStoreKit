@@ -135,6 +135,7 @@ extension Reactive where Base: SKPaymentQueue {
             
             let update = self.transactionObserver.rx_updatedTransaction
                 .flatMapLatest({ transaction -> Observable<SKPaymentTransaction> in
+                    print("transaction state = \(transaction.transactionState)")
                     switch transaction.transactionState {
                     case .purchased:
                         if shouldVerify {
@@ -142,7 +143,7 @@ extension Reactive where Base: SKPaymentQueue {
                         } else {
                             return Observable.of(transaction)
                         }
-                    case .failed, .deferred:
+                    case .failed:
                         if let transactionError = transaction.error {
                             return Observable.error(transactionError)
                         }
@@ -150,23 +151,22 @@ extension Reactive where Base: SKPaymentQueue {
                     }
                     return Observable.of(transaction)
                 })
-            let remove = self.transactionObserver.rx_removedTransaction
             
-            let sharedTransactionResult = Observable.of(update, remove)
-                .merge()
-                .share()
-            let disposable1 = sharedTransactionResult
-                .subscribe(onNext: { transaction in
+            let disposable = update
+                .flatMapLatest({ transaction -> Observable<SKPaymentTransaction> in
                     if self.base.transactions.count == 0 {
-                        observer.onCompleted()
+                        return Observable.empty()
+                    } else {
+                        return Observable.of(transaction)
                     }
                 })
-            let disposable2 = sharedTransactionResult
                 .bind(to: observer)
             
             self.base.add(payment)
             
-            return Disposables.create(disposable1, disposable2)
+            return Disposables.create {
+                disposable.dispose()
+            }
         }
         
         return observable
