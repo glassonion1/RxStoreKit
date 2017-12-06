@@ -46,7 +46,7 @@ extension ReceiptError: CustomStringConvertible {
 }
 
 extension SKPaymentQueue {
-    open func verifyReceipt() -> Observable<Any> {
+    func verifyReceipt(transaction: SKPaymentTransaction) -> Observable<SKPaymentTransaction> {
         #if DEBUG
             let verifyReceiptURLString = "https://sandbox.itunes.apple.com/verifyReceipt"
         #else
@@ -65,7 +65,32 @@ extension SKPaymentQueue {
             request.httpBody = json
             let scheduler = ConcurrentDispatchQueueScheduler(qos: .background)
             return URLSession.shared.rx.json(request: request).timeout(30, scheduler: scheduler)
+                .flatMapLatest({ [unowned self] response -> Observable<SKPaymentTransaction> in
+                    self.verificationResult(for: transaction, response: response)
+                })
         } catch let error {
+            return Observable.error(error)
+        }
+    }
+    
+    func verificationResult(for transaction: SKPaymentTransaction, response: Any) -> Observable<SKPaymentTransaction> {
+        let json = response as! [String: AnyObject]
+        let state = json["status"] as! Int
+        if state == 0 {
+            print(json)
+            let receipt = json["receipt"]!
+            let inApp = receipt["in_app"] as! [[String: Any]]
+            let contains = inApp.contains { element -> Bool in
+                let productId = element["product_id"] as! String
+                return productId == transaction.payment.productIdentifier
+            }
+            if contains {
+                return Observable.of(transaction)
+            } else {
+                return Observable.error(ReceiptError.illegal)
+            }
+        } else {
+            let error = ReceiptError.invalid(code: state)
             return Observable.error(error)
         }
     }
@@ -101,59 +126,27 @@ extension Reactive where Base: SKPaymentQueue {
         return observable
     }
     
-    public func add(product: SKProduct) -> Observable<SKPaymentTransaction> {
+    public func add(product: SKProduct,
+                    shouldVerify: Bool) -> Observable<SKPaymentTransaction> {
         
         let payment = SKPayment(product: product)
         
         let observable = Observable<SKPaymentTransaction>.create { observer in
             
-            let update = self.transactionObserver.rx_updatedTransaction.do(onNext: { transaction in
-                switch transaction.transactionState {
-                case .purchasing:
-                    print("in progress")
-                case .purchased:
-                    _ = self.base.verifyReceipt().subscribe(onNext: {response in
-                        let json = response as! [String: AnyObject]
-                        let state = json["status"] as! Int
-                        if state == 0 {
-                            print(json)
-                            let receipt = json["receipt"]!
-                            let inApp = receipt["in_app"] as! [[String: Any]]
-                            let contains = inApp.contains { element -> Bool in
-                                let productId = element["product_id"] as! String
-                                return productId == transaction.payment.productIdentifier
-                            }
-                            if contains {
-                                observer.onNext(transaction)
-                            } else {
-                                observer.onError(ReceiptError.illegal)
-                            }
+            let disposable = self.transactionObserver.rx_updatedTransaction
+                .flatMapLatest({ transaction -> Observable<SKPaymentTransaction> in
+                    switch transaction.transactionState {
+                    case .purchased:
+                        if shouldVerify {
+                            return self.base.verifyReceipt(transaction: transaction)
                         } else {
-                            let error = ReceiptError.invalid(code: state)
-                            observer.onError(error)
+                            return Observable.of(transaction)
                         }
-                    }, onError: { error in
-                        observer.onError(error)
-                    })
-                case .restored:
-                    print("restored")
-                case .failed:
-                    if let transactionError = transaction.error {
-                        observer.onError(transactionError)
+                    default: print("transaction state = \(transaction.transactionState)")
                     }
-                case .deferred:
-                    print("deferred")
-                }
-            })
-            let remove = self.transactionObserver.rx_removedTransaction
-            
-            let disposable = Observable.of(update, remove)
-                .merge()
-                .subscribe(onNext: { transaction in
-                    if self.base.transactions.count == 0 {
-                        observer.onCompleted()
-                    }
+                    return Observable.of(transaction)
                 })
+                .bind(to: observer)
             
             self.base.add(payment)
             
