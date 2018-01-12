@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		8EADF10C1FE5F1310012E4EC /* SKReceiptRefreshRequest+Rx.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EADF10A1FE5F1310012E4EC /* SKReceiptRefreshRequest+Rx.swift */; };
+		8EADF10D1FE5F1310012E4EC /* SKReceiptRefreshRequestDelegateProxy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EADF10B1FE5F1310012E4EC /* SKReceiptRefreshRequestDelegateProxy.swift */; };
 		DAE432571EFA10390025C54B /* RxSKPaymentTransactionObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAE4324E1EFA10390025C54B /* RxSKPaymentTransactionObserver.swift */; };
 		DAE432581EFA10390025C54B /* RxStoreKit.h in Headers */ = {isa = PBXBuildFile; fileRef = DAE4324F1EFA10390025C54B /* RxStoreKit.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		DAE432591EFA10390025C54B /* SKPaymentQueue+Rx.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAE432501EFA10390025C54B /* SKPaymentQueue+Rx.swift */; };
@@ -30,6 +32,8 @@
 /* Begin PBXFileReference section */
 		0509142AF4620A75035951E0 /* Pods-RxStoreKit.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RxStoreKit.debug.xcconfig"; path = "Pods/Target Support Files/Pods-RxStoreKit/Pods-RxStoreKit.debug.xcconfig"; sourceTree = "<group>"; };
 		3A2BBEE2898F1BBB4BD00AE2 /* Pods_RxStoreKitTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_RxStoreKitTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		8EADF10A1FE5F1310012E4EC /* SKReceiptRefreshRequest+Rx.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "SKReceiptRefreshRequest+Rx.swift"; sourceTree = "<group>"; };
+		8EADF10B1FE5F1310012E4EC /* SKReceiptRefreshRequestDelegateProxy.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SKReceiptRefreshRequestDelegateProxy.swift; sourceTree = "<group>"; };
 		B1012B5A83468CA630D1F4F1 /* Pods_RxStoreKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_RxStoreKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		C9A85FB6C707F760F3EF0D2D /* Pods-RxStoreKitTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RxStoreKitTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-RxStoreKitTests/Pods-RxStoreKitTests.debug.xcconfig"; sourceTree = "<group>"; };
 		CAA8A880D2804FD12EE26E0F /* Pods-RxStoreKit.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RxStoreKit.release.xcconfig"; path = "Pods/Target Support Files/Pods-RxStoreKit/Pods-RxStoreKit.release.xcconfig"; sourceTree = "<group>"; };
@@ -114,7 +118,9 @@
 				DAE4324F1EFA10390025C54B /* RxStoreKit.h */,
 				DAE432501EFA10390025C54B /* SKPaymentQueue+Rx.swift */,
 				DAE432511EFA10390025C54B /* SKProductsRequest+Rx.swift */,
+				8EADF10A1FE5F1310012E4EC /* SKReceiptRefreshRequest+Rx.swift */,
 				DAE432521EFA10390025C54B /* SKProductsRequestDelegateProxy.swift */,
+				8EADF10B1FE5F1310012E4EC /* SKReceiptRefreshRequestDelegateProxy.swift */,
 			);
 			path = Sources;
 			sourceTree = "<group>";
@@ -274,10 +280,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8EADF10D1FE5F1310012E4EC /* SKReceiptRefreshRequestDelegateProxy.swift in Sources */,
 				DAE432591EFA10390025C54B /* SKPaymentQueue+Rx.swift in Sources */,
 				DAE4325A1EFA10390025C54B /* SKProductsRequest+Rx.swift in Sources */,
 				DAE432571EFA10390025C54B /* RxSKPaymentTransactionObserver.swift in Sources */,
 				DAE4325B1EFA10390025C54B /* SKProductsRequestDelegateProxy.swift in Sources */,
+				8EADF10C1FE5F1310012E4EC /* SKReceiptRefreshRequest+Rx.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

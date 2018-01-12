@@ -49,10 +49,22 @@ productRequest.rx.productsRequest
     .flatMap { product -> Observable<SKPaymentTransaction> in
         return SKPaymentQueue.default().rx.add(product: product)
     }
-    .subscribe(onNext: { transition in
-        print(transition)
+    .subscribe(onNext: { transaction in
+        print(transaction)
     }).disposed(by: disposeBag)
 productRequest.start()
+```
+
+### Request receipt refresh
+```swift
+let receiptRefreshRequest = SKReceiptRefreshRequest()
+receiptRefreshRequest.rx.request
+    .subscribe(onCompleted: {
+        // Refreshed receipt is available
+    }, onError: { error in
+        print(error)
+    }).disposed(by: disposeBag)
+receiptRefreshRequest.start()
 ```
 
 ### Download hosting contents
