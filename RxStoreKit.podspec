@@ -17,7 +17,7 @@ Pod::Spec.new do |s|
   #
 
   s.name         = "RxStoreKit"
-  s.version      = "1.1.1"
+  s.version      = "1.2.0"
   s.summary      = "StoreKit library for RxSwift"
 
   # This description is used to generate tags and improve search results.
@@ -55,7 +55,7 @@ Pod::Spec.new do |s|
   s.author             = { "Taisuke Fujita" => "glassonion999@gmail.com" }
   # Or just: s.author    = "Taisuke Fujita"
   # s.authors            = { "Taisuke Fujita" => "glassonion999@gmail.com" }
-  # s.social_media_url   = "http://twitter.com/Taisuke Fujita"
+  # s.social_media_url   = "http://twitter.com/glassonion1"
 
   # ――― Platform Specifics ――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
   #
@@ -136,6 +136,6 @@ Pod::Spec.new do |s|
 
   # s.xcconfig = { "HEADER_SEARCH_PATHS" => "$(SDKROOT)/usr/include/libxml2" }
   # s.dependency "JSONKit", "~> 1.4"
-  s.dependency 'RxSwift', '~> 4.0.0'
-  s.dependency 'RxCocoa', '~> 4.0.0'
+  s.dependency 'RxSwift', '~> 4.1.1'
+  s.dependency 'RxCocoa', '~> 4.1.1'
 end
