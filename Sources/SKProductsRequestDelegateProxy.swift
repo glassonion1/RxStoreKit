@@ -41,7 +41,7 @@ public class SKProductsRequestDelegateProxy
     }
 
     public func request(_ request: SKRequest, didFailWithError error: Error) {
-        _forwardToDelegate?.request(request, didFailWithError: error)
+        _forwardToDelegate?.request?(request, didFailWithError: error)
         responseSubject.onError(error)
     }
 
