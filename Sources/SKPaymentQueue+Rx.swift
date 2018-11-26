@@ -46,7 +46,7 @@ extension ReceiptError: CustomStringConvertible {
 }
 
 extension SKPaymentQueue {
-    func verifyReceipt(transaction: SKPaymentTransaction) -> Observable<SKPaymentTransaction> {
+    func verifyReceipt(transaction: SKPaymentTransaction, excludeOldTransaction: Bool = false) -> Observable<SKPaymentTransaction> {
         #if DEBUG
             let verifyReceiptURLString = "https://sandbox.itunes.apple.com/verifyReceipt"
         #else
@@ -57,7 +57,11 @@ extension SKPaymentQueue {
             let receiptURL = Bundle.main.appStoreReceiptURL
             let data = try Data(contentsOf: receiptURL!, options: [])
             let base64 = data.base64EncodedString(options: Data.Base64EncodingOptions(rawValue: 0))
-            let json = try JSONSerialization.data(withJSONObject: ["receipt-data": base64], options: [])
+            let json = try JSONSerialization.data(withJSONObject:
+                [
+                    "receipt-data": base64,
+                    "exclude-old-transactions": excludeOldTransaction
+                ], options: [])
             
             var request = URLRequest(url: url, cachePolicy: .reloadIgnoringCacheData)
             request.httpMethod = "POST"
