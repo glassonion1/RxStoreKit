@@ -46,7 +46,7 @@ extension ReceiptError: CustomStringConvertible {
 }
 
 extension SKPaymentQueue {
-    func verifyReceipt(transaction: SKPaymentTransaction) -> Observable<SKPaymentTransaction> {
+    func verifyReceipt(transaction: SKPaymentTransaction, excludeOldTransaction: Bool = false) -> Observable<SKPaymentTransaction> {
         #if DEBUG
             let verifyReceiptURLString = "https://sandbox.itunes.apple.com/verifyReceipt"
         #else
@@ -57,7 +57,11 @@ extension SKPaymentQueue {
             let receiptURL = Bundle.main.appStoreReceiptURL
             let data = try Data(contentsOf: receiptURL!, options: [])
             let base64 = data.base64EncodedString(options: Data.Base64EncodingOptions(rawValue: 0))
-            let json = try JSONSerialization.data(withJSONObject: ["receipt-data": base64], options: [])
+            let json = try JSONSerialization.data(withJSONObject:
+                [
+                    "receipt-data": base64,
+                    "exclude-old-transactions": excludeOldTransaction
+                ], options: [])
             
             var request = URLRequest(url: url, cachePolicy: .reloadIgnoringCacheData)
             request.httpMethod = "POST"
@@ -125,39 +129,75 @@ extension Reactive where Base: SKPaymentQueue {
         
         return observable
     }
-    
-    public func add(product: SKProduct,
-                    shouldVerify: Bool) -> Observable<SKPaymentTransaction> {
-        
+
+    public func add(product: SKProduct, shouldVerify: Bool) -> Observable<SKPaymentTransaction> {
+
         let payment = SKPayment(product: product)
-        
-        let observable = Observable<SKPaymentTransaction>.create { observer in
-            
+
+        if shouldVerify {
+            let observable = Observable<SKPaymentTransaction>.create { observer in
+
+                let disposable = self.transactionObserver.rx_updatedTransaction
+                    .flatMapLatest({ transaction -> Observable<SKPaymentTransaction> in
+                        switch transaction.transactionState {
+                        case .purchased:
+                            return self.base.verifyReceipt(transaction: transaction)
+                        default: print("transaction state = \(transaction.transactionState)")
+                        }
+                        return Observable.of(transaction)
+                    })
+                    .bind(to: observer)
+
+                self.base.add(payment)
+
+                return Disposables.create {
+                    disposable.dispose()
+                }
+            }
+
+            return observable
+        }
+
+        return Observable<SKPaymentTransaction>.create { observer in
+
             let disposable = self.transactionObserver.rx_updatedTransaction
-                .flatMapLatest({ transaction -> Observable<SKPaymentTransaction> in
+                .subscribe(onNext:{ transaction in
+
+
                     switch transaction.transactionState {
                     case .purchased:
-                        if shouldVerify {
-                            return self.base.verifyReceipt(transaction: transaction)
+                        SKPaymentQueue.default().finishTransaction(transaction)
+
+                        observer.onNext(transaction)
+                        observer.onCompleted()
+
+                    case .failed:
+                        SKPaymentQueue.default().finishTransaction(transaction)
+                        if let err = transaction.error {
+
+                            observer.onError(err)
                         } else {
-                            return Observable.of(transaction)
+                            observer.onNext(transaction)
+                            observer.onCompleted()
                         }
-                    default: print("transaction state = \(transaction.transactionState)")
+
+                    case .restored:
+                        SKPaymentQueue.default().finishTransaction(transaction)
+                        observer.onNext(transaction)
+
+                    default:
+                        observer.onNext(transaction)
                     }
-                    return Observable.of(transaction)
                 })
-                .bind(to: observer)
-            
+
             self.base.add(payment)
-            
-            return Disposables.create {
+
+            return Disposables.create() {
                 disposable.dispose()
             }
         }
-        
-        return observable
     }
-    
+
     public func start(downloads: [SKDownload]) -> Observable<SKDownload> {
         
         let observable = Observable<SKDownload>.create { observer in
