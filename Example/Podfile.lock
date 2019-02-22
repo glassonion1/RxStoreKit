@@ -1,16 +1,19 @@
 PODS:
-  - RxCocoa (4.2.0):
+  - RxAtomic (4.4.1)
+  - RxCocoa (4.4.1):
     - RxSwift (~> 4.0)
-  - RxStoreKit (1.2.2):
-    - RxCocoa (~> 4.2.0)
-    - RxSwift (~> 4.2.0)
-  - RxSwift (4.2.0)
+  - RxStoreKit (1.2.3):
+    - RxCocoa (~> 4.0)
+    - RxSwift (~> 4.0)
+  - RxSwift (4.4.1):
+    - RxAtomic (~> 4.4)
 
 DEPENDENCIES:
   - RxStoreKit (from `../`)
 
 SPEC REPOS:
   https://github.com/cocoapods/specs.git:
+    - RxAtomic
     - RxCocoa
     - RxSwift
 
@@ -19,10 +22,11 @@ EXTERNAL SOURCES:
     :path: "../"
 
 SPEC CHECKSUMS:
-  RxCocoa: 0b54909c902e1e581212a03e690bbd94032d8baa
-  RxStoreKit: ccab4c48253e060e98d8048e76795eb753377949
-  RxSwift: 99e10317ddfcc7fbe01356aafd118fde4a0be104
+  RxAtomic: f8d6adc1ccb87a767811269e4875887bc74dbf19
+  RxCocoa: 2f35a76bf8887872e28a1914112395b11b8e0e64
+  RxStoreKit: b00d01011cf78808bb1abc1daa006164b1d927fd
+  RxSwift: 92fcf68dfef21f3e2ab1965363d9e7b3d787597e
 
 PODFILE CHECKSUM: e1d5d3ef6890fc1de58f53a3ed76b94c906a9505
 
-COCOAPODS: 1.5.3
+COCOAPODS: 1.6.0

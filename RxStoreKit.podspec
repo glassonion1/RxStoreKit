@@ -65,7 +65,7 @@ Pod::Spec.new do |s|
 
   s.platform     = :ios, "9.0"
   s.requires_arc = true
-  
+
   # s.platform     = :ios
   # s.platform     = :ios, "5.0"
 
@@ -136,6 +136,6 @@ Pod::Spec.new do |s|
 
   # s.xcconfig = { "HEADER_SEARCH_PATHS" => "$(SDKROOT)/usr/include/libxml2" }
   # s.dependency "JSONKit", "~> 1.4"
-  s.dependency 'RxSwift', '~> 4.2'
-  s.dependency 'RxCocoa', '~> 4.2'
+  s.dependency 'RxSwift', '~> 4.0'
+  s.dependency 'RxCocoa', '~> 4.0'
 end
