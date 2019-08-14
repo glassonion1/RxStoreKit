@@ -68,7 +68,7 @@ extension SKPaymentQueue {
             request.addValue("application/json", forHTTPHeaderField: "Content-Type")
             request.httpBody = json
             let scheduler = ConcurrentDispatchQueueScheduler(qos: .background)
-            return URLSession.shared.rx.json(request: request).timeout(30, scheduler: scheduler)
+            return URLSession.shared.rx.json(request: request).timeout(.seconds(30), scheduler: scheduler)
                 .flatMapLatest({ [unowned self] response -> Observable<SKPaymentTransaction> in
                     self.verificationResult(for: transaction, response: response)
                 })
