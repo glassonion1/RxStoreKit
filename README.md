@@ -1,9 +1,5 @@
 # RxStoreKit
 
-[![Version](https://img.shields.io/cocoapods/v/RxStoreKit.svg?style=flat)](http://cocoapods.org/pods/RxStoreKit)
-[![License](https://img.shields.io/cocoapods/l/RxStoreKit.svg?style=flat)](http://cocoapods.org/pods/RxStoreKit)
-[![Platform](https://img.shields.io/cocoapods/p/RxStoreKit.svg?style=flat)](http://cocoapods.org/pods/RxStoreKit)
-
 RxStoreKit is lightweight and easy to use Rx support for StoreKit(In-App Purchases).
 
 ## Usage
@@ -91,14 +87,21 @@ productRequest.start()
 
 This library depends on both __RxSwift__ and __RxCocoa__
 
-### CocoaPods
+### Swift Package Manager
+Create a Package.swift file.
+```swift
+import PackageDescription
 
-RxStoreKit is available through [CocoaPods](http://cocoapods.org). To install it, simply add the following line to your Podfile:
-```ruby
-pod "RxStoreKit"
+let package = Package(
+  name: "RxTestProject",
+  dependencies: [
+    .package(url: "https://github.com/glassonion1/RxStoreKit.git", from: "1.3.0")
+  ],
+  targets: [
+    .target(name: "RxTestProject", dependencies: ["RxStoreKit"])
+  ]
+)
 ```
-Then, run following command:
-`$ pod install`
 
 ## License
 

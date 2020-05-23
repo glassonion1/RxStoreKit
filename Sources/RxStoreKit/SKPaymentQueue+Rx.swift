@@ -198,12 +198,13 @@ extension Reactive where Base: SKPaymentQueue {
         }
     }
 
+    @available(iOS 12.0, *)
     public func start(downloads: [SKDownload]) -> Observable<SKDownload> {
         
         let observable = Observable<SKDownload>.create { observer in
             
             let disposable = self.transactionObserver.rx_updatedDownload.subscribe(onNext: { download in
-                switch (download.downloadState) {
+                switch (download.state) {
                 case .waiting:
                     print("waiting")
                 case .active:
