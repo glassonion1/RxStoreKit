@@ -28,7 +28,7 @@ extension Reactive where Base: SKReceiptRefreshRequest {
     }
     
     public var request: Completable {
-        return SKReceiptRefreshRequestDelegateProxy.proxy(for: base).responseSubject.ignoreElements()
+        return SKReceiptRefreshRequestDelegateProxy.proxy(for: base).responseSubject.ignoreElements().asCompletable()
     }
     
 }
